@@ -17,9 +17,17 @@ td {
   vertical-align: top;
   padding-right: 60px;
 }
-.hover-underline {
+/* .hover-underline {
   text-decoration: none;
 }
 .hover-underline:hover {
   text-decoration: underline;
+} */
+
+.blipText {
+  fill: black;
+  pointer-events: all;
+}
+.blipText:hover { 
+  fill: red;
 }

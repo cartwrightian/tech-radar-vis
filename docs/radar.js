@@ -18,7 +18,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE..
 
 
 function radar_visualization(config) {
@@ -363,9 +363,10 @@ function radar_visualization(config) {
               .text(function(d) { return d.id + ". " + d.label; })
               .style("font-family", config.font_family)
               .style("font-size", "11px")
-              .on("mouseover", function(d) { showBubble(d); highlightLegendItem(d); })
-              .on("mouseout", function(d) { hideBubble(d); unhighlightLegendItem(d); })
+              // .on("mouseover", function(d) { showBubble(d); highlightLegendItem(d); })
+              // .on("mouseout", function(d) { hideBubble(d); unhighlightLegendItem(d); })
               .call(wrap_text)
+              .attr("class", "blipText")
               .each(function() {
                 previousLegendHeight += d3.select(this).node().getBBox().height;
               });
