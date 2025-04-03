@@ -177,6 +177,9 @@ function radar_visualization(config) {
   }
 
   // assign unique sequential id to each entry
+  if (config.useIds) {
+      // use id already in the entry
+  } else {
   var id = 1;
   for (quadrant of [2,3,1,0]) {
     for (var ring = 0; ring < 4; ring++) {
@@ -187,6 +190,7 @@ function radar_visualization(config) {
       }
     }
   }
+}
 
   function translate(x, y) {
     return "translate(" + x + "," + y + ")";
