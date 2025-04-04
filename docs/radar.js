@@ -216,6 +216,8 @@ function radar_visualization(config) {
     .attr("height", scaled_height);
 
   var radar = svg.append("g");
+  const legend = radar.append("g");
+
   if ("zoomed_quadrant" in config) {
     svg.attr("viewBox", viewbox(config.zoomed_quadrant));
   } else {
@@ -322,7 +324,7 @@ function radar_visualization(config) {
       .style("font-size", "12px");
 
     // legend
-    const legend = radar.append("g");
+    //const legend = radar.append("g");
     for (let quadrant = 0; quadrant < 4; quadrant++) {
       legend.append("text")
         .attr("transform", translate(
@@ -485,13 +487,14 @@ function radar_visualization(config) {
     .enter()
       .append("g")
         .attr("class", "blip")
-        .attr("transform", function(d, i) { return legend_transform(d.quadrant, d.ring, config.legend_column_width, i); })
-        .on("mouseover", function(d) { showBubble(d); highlightLegendItem(d); })
-        .on("mouseout", function(d) { hideBubble(d); unhighlightLegendItem(d); });
+        .attr("transform", function(d, i) { return legend_transform(d.quadrant, d.ring, config.legend_column_width, i); });
+        // .on("mouseover", function(d) { showBubble(d); highlightLegendItem(d); })
+        // .on("mouseout", function(d) { hideBubble(d); unhighlightLegendItem(d); });
 
   // configure each blip
   blips.each(function(d) {
     var blip = d3.select(this);
+    blip.attr("id", "blip" + d.id);
 
     // blip link
     if (d.active && Object.prototype.hasOwnProperty.call(d, "link") && d.link) {
@@ -545,11 +548,17 @@ function radar_visualization(config) {
   }
 
   // distribute blips, while avoiding collisions
-  d3.forceSimulation()
+  var sim = d3.forceSimulation()
     .nodes(config.entries)
     .velocityDecay(0.19) // magic number (found by experimentation)
+    .alphaMin(0.6)
     .force("collision", d3.forceCollide().radius(12).strength(0.85))
-    .on("tick", ticked);
+    .on("tick", ticked)
+    .on("end", drawLines)
+    //.stop()
+    ;
+  sim.tick(config.entries.length);
+  //sim.stop();
 
   function ringDescriptionsTable() {
     var table = d3.select("body").append("table")
@@ -600,5 +609,31 @@ function radar_visualization(config) {
 
   if (config.print_ring_descriptions_table) {
     ringDescriptionsTable();
+  }
+
+
+  function drawLines() {
+    // link blip and text
+    var blips=rink.selectAll(".blip");
+    blips.each(function(d) {
+      const blip = d3.select(this);
+      const blipBox = blip.node().getBoundingClientRect();
+
+      const blipText = legend.select("#legendItem"+d.id);
+      const textBox = blipText.node().getBoundingClientRect();
+    
+      const link = d3.linkHorizontal()({
+        source: [blipBox.x, blipBox.y],
+        target:[textBox.x, textBox.y]
+      });
+
+      svg
+        .append('path')
+        .attr('id', "link"+d.id)
+        .attr('class', 'blipLink')
+        .attr('d', link)
+        .attr('stroke', 'noe')
+        .attr('fill', 'none');
+    });
   }
 }

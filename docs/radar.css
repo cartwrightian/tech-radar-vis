@@ -31,3 +31,11 @@ td {
 .blipText:hover { 
   fill: red;
 }
+
+.blipLink {
+  stroke: none;
+  pointer-events: all;
+}
+.blipLink:hover { 
+  stroke: red;
+}

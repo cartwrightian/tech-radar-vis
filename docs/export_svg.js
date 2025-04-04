@@ -4,21 +4,14 @@
 // use via <button id='saveButton' onClick="exportSvg(radar)">Export</button>
 // added to the html
 
-function exportSvg(svgFromDom) {
-
-    let css=`.blipText {
-        fill: black;
-        pointer-events: all;
-        }
-        .blipText:hover { 
-        fill: red;
-        }`
+async function exportSvg(svgFromDom) {
 
     var svg = clone(svgFromDom);
 
     svg.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
 
     var style = document.createElement("style");
+    const css = await fetchCss('radar.css');
     style.innerHTML=css;
     svg.appendChild(style);
 
@@ -49,4 +42,11 @@ function clone(svgNode) {
         result.appendChild(clonedChild);
     });
     return result;
+}
+
+async function fetchCss(url) {
+    const response = await fetch(url);
+    const text = response.text();
+
+    return text;
 }
