@@ -218,6 +218,8 @@ function radar_visualization(config) {
   var radar = svg.append("g");
   const legend = radar.append("g");
 
+  radar.attr('class',"tech-radar");
+
   if ("zoomed_quadrant" in config) {
     svg.attr("viewBox", viewbox(config.zoomed_quadrant));
   } else {
@@ -299,32 +301,26 @@ function radar_visualization(config) {
     radar.append("a")
       .attr("href", config.repo_url)
       .attr("transform", translate(config.title_offset.x, config.title_offset.y))
+      .attr('class', "radarTitle")
       .append("text")
-      .attr("class", "hover-underline")  // add class for hover effect
       .text(config.title)
-      .style("font-family", config.font_family)
-      .style("font-size", "30")
-      .style("font-weight", "bold")
 
     // date
     radar
       .append("text")
       .attr("transform", translate(config.title_offset.x, config.title_offset.y + 20))
       .text(config.date || "")
-      .style("font-family", config.font_family)
-      .style("font-size", "14")
-      .style("fill", "#999")
+      .attr('class', "radarDate")
 
     // footer
     radar.append("text")
       .attr("transform", translate(config.footer_offset.x, config.footer_offset.y))
       .text("▲ moved up     ▼ moved down     ★ new     ⬤ no change")
       .attr("xml:space", "preserve")
-      .style("font-family", config.font_family)
-      .style("font-size", "12px");
+      .attr('class', "radarFooter")
 
-    // legend
-    //const legend = radar.append("g");
+   
+    // populate legnds
     for (let quadrant = 0; quadrant < 4; quadrant++) {
       legend.append("text")
         .attr("transform", translate(
@@ -332,9 +328,8 @@ function radar_visualization(config) {
           config.legend_offset[quadrant].y - 45
         ))
         .text(config.quadrants[quadrant].name)
-        .style("font-family", config.font_family)
-        .style("font-size", "18px")
-        .style("font-weight", "bold");
+        .attr('class', "quadrantHeader");
+
       let previousLegendHeight = 0
       for (let ring = 0; ring < 4; ring++) {
         if (ring % 2 === 0) {
@@ -343,13 +338,14 @@ function radar_visualization(config) {
         legend.append("text")
           .attr("transform", legend_transform(quadrant, ring, config.legend_column_width, null, previousLegendHeight))
           .text(config.rings[ring].name)
-          .style("font-family", config.font_family)
-          .style("font-size", "12px")
-          .style("font-weight", "bold")
+          .attr('class', "ringtext")
           .style("fill", config.rings[ring].color);
+
         legend.selectAll(".legend" + quadrant + ring)
           .data(segmented[quadrant][ring])
           .enter()
+            .append("g").attr("class", "blip-legend")
+            .attr("id", function(d, i) { return "blip-legend-" + d.id; })
             .append("a")
               .attr("href", function (d, i) {
                  return d.link ? d.link : "#"; // stay on same page if no link was provided
@@ -360,15 +356,13 @@ function radar_visualization(config) {
               })
             .append("text")
               .attr("transform", function(d, i) { return legend_transform(quadrant, ring, config.legend_column_width, i, previousLegendHeight); })
-              .attr("class", "legend" + quadrant + ring)
-              .attr("id", function(d, i) { return "legendItem" + d.id; })
+              .attr("id", function(d, i) { return "legendText" + d.id; })
               .text(function(d) { return d.id + ". " + d.label; })
-              .style("font-family", config.font_family)
-              .style("font-size", "11px")
               // .on("mouseover", function(d) { showBubble(d); highlightLegendItem(d); })
               // .on("mouseout", function(d) { hideBubble(d); unhighlightLegendItem(d); })
               .call(wrap_text)
-              .attr("class", "blipText")
+              //.attr("class", "blip-legend")
+              .attr("class", function(d, i) { return "blip-highlight-" + d.id; })
               .each(function() {
                 previousLegendHeight += d3.select(this).node().getBBox().height;
               });
@@ -470,13 +464,13 @@ function radar_visualization(config) {
   }
 
   function highlightLegendItem(d) {
-    var legendItem = document.getElementById("legendItem" + d.id);
+    var legendItem = document.getElementById("legendText" + d.id);
     legendItem.setAttribute("filter", "url(#solid)");
     legendItem.setAttribute("fill", "white");
   }
 
   function unhighlightLegendItem(d) {
-    var legendItem = document.getElementById("legendItem" + d.id);
+    var legendItem = document.getElementById("legendText" + d.id);
     legendItem.removeAttribute("filter");
     legendItem.removeAttribute("fill");
   }
@@ -486,7 +480,7 @@ function radar_visualization(config) {
     .data(config.entries)
     .enter()
       .append("g")
-        .attr("class", "blip")
+        .attr("class", "blip-icon")
         .attr("transform", function(d, i) { return legend_transform(d.quadrant, d.ring, config.legend_column_width, i); });
         // .on("mouseover", function(d) { showBubble(d); highlightLegendItem(d); })
         // .on("mouseout", function(d) { hideBubble(d); unhighlightLegendItem(d); });
@@ -531,12 +525,8 @@ function radar_visualization(config) {
       blip.append("text")
         .text(blip_text)
         .attr("y", 3)
-        .attr("text-anchor", "middle")
-        .style("fill", "#fff")
-        .style("font-family", config.font_family)
-        .style("font-size", function(d) { return blip_text.length > 2 ? "8px" : "9px"; })
-        .style("pointer-events", "none")
-        .style("user-select", "none");
+        .attr("class", function(d, i) { return "blip-highlight-" + d.id; })
+        .style("font-size", function(d) { return blip_text.length > 2 ? "8px" : "9px"; });
     }
   });
 
@@ -562,7 +552,7 @@ function radar_visualization(config) {
 
   function ringDescriptionsTable() {
     var table = d3.select("body").append("table")
-      .attr("class", "radar-table")
+      .attr("class", "radarTable")
       .style("border-collapse", "collapse")
       .style("position", "relative")
       .style("top", "-70px")  // Adjust this value to move the table closer vertically
@@ -614,12 +604,12 @@ function radar_visualization(config) {
 
   function drawLines() {
     // link blip and text
-    var blips=rink.selectAll(".blip");
+    var blips=rink.selectAll(".blip-icon");
     blips.each(function(d) {
       const blip = d3.select(this);
       const blipBox = blip.node().getBoundingClientRect();
 
-      const blipText = legend.select("#legendItem"+d.id);
+      const blipText = legend.select("#legendText"+d.id);
       const textBox = blipText.node().getBoundingClientRect();
     
       const link = d3.linkHorizontal()({
