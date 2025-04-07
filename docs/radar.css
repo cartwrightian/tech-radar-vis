@@ -23,16 +23,6 @@ td {
   font-weight: bold
 }
 
-/* .radar:hover .blip-icon{
-  fill: red;
-  border:2px solid #333;
-}
-
-.radar:hover .blip-legend-text{
-  fill: red;
-  border:2px solid #333;
-} */
-
 .radarTitle:hover {
   text-decoration: underline;
 }
@@ -56,55 +46,15 @@ td {
 }
 
 .blip-icon {
-  /* pointer-events: all; */
   text-anchor: middle;
-  /* user-select: none; */
   font-weight: lighter;
 }
-
-/* g[class^="blip-"] *:hover {
-  fill: red;
-  font-weight: bolder;
-} */
-
-/* .tech-radar:hover #legendItem67, .tech-radar:hover #blip67 {
-  fill: red;
-  font-weight: bolder;
-} */
-
-/* .tech-radar ~ .blip-legend-text:hover #legendItem67, .tech-radar:hover #blip67 {
-  fill: red;
-  font-weight: bolder;
-} */
-
-/* .blip-highlight-67:hover  {
-  font-weight: bolder;
-  fill: red;
-} */
-
-.tech-radar .blip-highlight-67:hover  {
-  font-weight: bolder;
-  fill: red;
-}
-
-/* .tech-radar:hover .blip-legend-text#legendItem67:hover {
-  font-weight: bolder;
-} */
-
-/* .blip-icon:hover  {
-  fill: white;
-  font-weight: bolder;
-} */
 
 .blip-legend {
   font-size: 12px;
   fill: black;
 }
 
-
-/* .blip-legend-text *:hover { 
-  fill: red;
-} */
 
 .blipLink {
   stroke: none;

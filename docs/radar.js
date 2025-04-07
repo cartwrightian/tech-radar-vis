@@ -609,21 +609,44 @@ function radar_visualization(config) {
       const blip = d3.select(this);
       const blipBox = blip.node().getBoundingClientRect();
 
-      const blipText = legend.select("#legendText"+d.id);
+      const blipText = legend.select("#blip-legend-"+d.id);
       const textBox = blipText.node().getBoundingClientRect();
     
-      const link = d3.linkHorizontal()({
-        source: [blipBox.x, blipBox.y],
-        target:[textBox.x, textBox.y]
-      });
+      var linkGroup = svg
+        .append('g')
+        .attr('stroke', 'none')
+        .attr('fill', 'none')
+        .attr('class', 'blipLink');
 
-      svg
-        .append('path')
+      const blipBoxXOffset = blipBox.width/2;
+      const blipBoxYOffset = blipBox.height/2
+      linkGroup.append('rect')
+        .attr('width', blipBox.width)
+        .attr('height', blipBox.height)
+        .attr('x', blipBox.x - blipBoxXOffset)
+        .attr('y', blipBox.y - blipBoxYOffset);
+
+      const textBoxXOffset = textBox.width/2;
+      const textBoxYOffset = textBox.height/2
+      linkGroup.append('rect')
+        .attr('width', textBox.width)
+        .attr('height', textBox.height)
+        .attr('x', textBox.x)
+        .attr('y', textBox.y - textBoxYOffset);
+
+      var lineXEnd = textBox.x;
+      if (blipBox.x > textBox.x) {
+        // blip LHS of text
+        lineXEnd = textBox.x + textBox.width;
+      }
+      
+      const link = d3.linkHorizontal()({
+          source: [blipBox.x, blipBox.y],
+          target:[lineXEnd, textBox.y]
+        });
+        linkGroup.append('path')
         .attr('id', "link"+d.id)
-        .attr('class', 'blipLink')
-        .attr('d', link)
-        .attr('stroke', 'noe')
-        .attr('fill', 'none');
+        .attr('d', link);
     });
   }
 }
